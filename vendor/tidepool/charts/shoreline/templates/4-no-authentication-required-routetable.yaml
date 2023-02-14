@@ -1,0 +1,176 @@
+{{ if .Values.global.glooingress.enabled }}
+apiVersion: gateway.solo.io/v1
+kind: RouteTable
+metadata:
+  name: shoreline-no-authentication-required
+  namespace: {{ .Release.Namespace }}
+  labels:
+    namespace: {{ .Release.Namespace }}
+    app: tidepool
+spec:
+  routes:
+  - matchers:
+    - methods:
+      - POST
+      prefix: /auth/serverlogin
+    routeAction:
+      single:
+        upstream:
+          name: shoreline
+    options:
+      prefixRewrite: /serverlogin
+      extauth:
+        disable: true
+  - matchers:
+    - methods:
+      - POST
+      prefix: /serverlogin
+    routeAction:
+      single:
+        upstream:
+          name: shoreline
+    options:
+      extauth:
+        disable: true
+  - matchers:
+    - methods:
+      - POST
+      prefix: /auth/user
+    routeAction:
+      single:
+        upstream:
+          name: shoreline
+    options:
+      prefixRewrite: /user
+      extauth:
+        disable: true
+  - matchers:
+    - methods:
+      - POST
+      prefix: /auth/login
+    routeAction:
+      single:
+        upstream:
+          name: shoreline
+    options:
+      prefixRewrite: /login
+      timeout: '30s'
+      extauth:
+        disable: true
+  - matchers:
+    - methods:
+      - POST
+      prefix: /auth/logout
+    routeAction:
+      single:
+        upstream:
+          name: shoreline
+    options:
+      prefixRewrite: /logout
+      timeout: '30s'
+      extauth:
+        disable: true
+  - matchers:
+    - methods:
+      - GET
+      prefix: /auth/private
+    routeAction:
+      single:
+        upstream:
+          name: shoreline
+    options:
+      prefixRewrite: /private
+      timeout: '30s'
+      extauth:
+        disable: true
+  - matchers:
+    - methods:
+      - GET
+      prefix: /auth/token/
+    routeAction:
+      single:
+        upstream:
+          name: shoreline
+    options:
+      prefixRewrite: /token/
+      timeout: '30s'
+      extauth:
+        disable: true
+  - matchers:
+    - methods:
+      - GET
+      - DELETE
+      prefix: /auth/users
+    routeAction:
+      single:
+        upstream:
+          name: shoreline
+    options:
+      prefixRewrite: /users
+      timeout: '30s'
+      extauth:
+        disable: true
+  - matchers:
+    - methods:
+      - GET
+      - PUT
+      - DELETE
+      prefix: /auth/user/
+    routeAction:
+      single:
+        upstream:
+          name: shoreline
+    options:
+      prefixRewrite: /user/
+      extauth:
+        disable: true
+  - matchers:
+    - methods:
+      - GET
+      - PUT
+      prefix: /auth/user
+    routeAction:
+      single:
+        upstream:
+          name: shoreline
+    options:
+      prefixRewrite: /user
+      extauth:
+        disable: true
+  - matchers:
+    - methods:
+      - GET
+      prefix: /auth/login
+    routeAction:
+      single:
+        upstream:
+          name: shoreline
+    options:
+      prefixRewrite: /login
+      timeout: '30s'
+      extauth:
+        disable: true
+  - matchers:
+    - methods:
+      - DELETE
+      prefix: /v1/users/
+    routeAction:
+      single:
+        upstream:
+          name: shoreline
+    options:
+      prefixRewrite: /user/
+      extauth:
+        disable: true
+  - matchers:
+    - methods:
+      - GET
+      regex: /v1/users/[^/]+
+    routeAction:
+      single:
+        upstream:
+          name: shoreline
+    options:
+      extauth:
+        disable: true
+{{- end }}

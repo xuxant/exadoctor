@@ -1,0 +1,37 @@
+{{ if .Values.global.glooingress.enabled }}
+apiVersion: gateway.solo.io/v1
+kind: RouteTable
+metadata:
+  name: jellyfish
+  namespace: {{ .Release.Namespace }}
+  labels:
+    namespace: {{ .Release.Namespace }}
+    app: tidepool
+spec:
+  routes:
+  - matchers:
+    - methods:
+      - POST
+      prefix: /data/
+    routeAction:
+      single:
+        upstream:
+          name: jellyfish
+    options:
+      timeout: "60s"
+{{- if .Values.shadowing }}
+      shadowing:
+{{- toYaml .Values.shadowing | nindent 8 }}
+{{- end }}
+  - matchers:
+    - methods:
+      - GET
+      prefix: /info
+    options:
+      extauth:
+        disable: true
+    routeAction:
+      single:
+        upstream:
+          name: jellyfish
+{{- end }}

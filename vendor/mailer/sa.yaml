@@ -1,0 +1,7 @@
+kind: ServiceAccount
+apiVersion: v1
+metadata:
+  name: mailer
+  namespace: tidepool
+  annotations:
+    eks.amazonaws.com/role-arn: "arn:aws:iam::237900309610:role/tidepool-ses-permission"

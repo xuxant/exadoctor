@@ -1,0 +1,33 @@
+{{ if .Values.global.glooingress.enabled }}
+apiVersion: gateway.solo.io/v1
+kind: RouteTable
+metadata:
+  name: export
+  namespace: {{ .Release.Namespace }}
+  labels:
+    namespace: {{ .Release.Namespace }}
+    app: tidepool
+spec:
+  routes:
+  - matchers:
+    - methods:
+      - GET
+      exact: /export/status
+    routeAction:
+      single:
+        upstream:
+          name: export
+    options:
+      extauth:
+       disable: true
+  - matchers:
+    - prefix: /export/
+    routeAction:
+      single:
+        upstream:
+          name: export
+    options:
+      timeout: '3m'
+      extauth:
+       disable: true
+{{- end }}

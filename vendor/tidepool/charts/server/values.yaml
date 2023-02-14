@@ -1,0 +1,6 @@
+secret:
+  # -- whether to create secret
+  enabled: false
+  data_:
+    # -- service authorization, if empty, random value is generated
+    ServiceAuth: ""

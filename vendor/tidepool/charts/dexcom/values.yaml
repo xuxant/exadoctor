@@ -1,0 +1,16 @@
+secret:
+  # -- whether to create dexcom secret
+  enabled: false
+  data_:
+    # -- plaintext Dexcom Oauth2 client id
+    ClientId: ""
+    # -- plaintext Dexcom Oauth2 client secret
+    ClientSecret: ""
+    # -- plaintext Dexcom Oauth2 state salt
+    StateSalt: ""                            # the Dexcom client API url
+configmap:
+  # -- whether to generate a configmap
+  enabled: true
+  redirectURL: ""
+  clientURL: "https://api.dexcom.com"
+

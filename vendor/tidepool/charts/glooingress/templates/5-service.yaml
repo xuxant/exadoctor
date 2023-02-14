@@ -1,0 +1,16 @@
+{{ if .Values.global.glooingress.enabled }}
+{{ $proxy := .Values.global.gateway.proxy }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: internal
+  namespace: {{ .Release.Namespace }}
+  labels:
+spec:
+  externalName: {{ $proxy.name }}.{{ $proxy.namespace | default .Release.Namespace }}.svc.cluster.local
+  ports:
+  - port: {{ $proxy.port }}
+    targetPort: {{ $proxy.targetPort | default 0 }}
+  type: ExternalName
+{{- end }}

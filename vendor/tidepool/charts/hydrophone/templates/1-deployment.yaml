@@ -1,0 +1,121 @@
+---
+{{- define "charts.hydrophone.s3.url" -}} {{include "charts.s3.url" .}}/{{ .Values.deployment.env.store.s3.bucket }} {{- end }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: hydrophone
+{{ include "charts.labels.standard" .}}
+  name: hydrophone
+  namespace: {{.Release.Namespace}}
+  annotations:
+    secret.reloader.stakater.com/reload: "server,{{ .Values.mongo.secretName }}"
+{{ if .Values.deployment.annotations }}
+    {{- .Values.deployment.annotations | toYaml | nindent 4 }}
+{{- end }}
+spec:
+  selector:
+    matchLabels:
+      app: hydrophone
+      app.kubernetes.io/name: {{ include "charts.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  replicas: {{ .Values.deployment.replicas }}
+  template:
+    metadata:
+{{ if .Values.podAnnotations }}
+      annotations:
+        {{- .Values.podAnnotations | toYaml | nindent 8 }}
+{{- end }}
+      labels:
+        app: hydrophone
+        app.kubernetes.io/name: {{ include "charts.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      initContainers:
+      {{ include "charts.init.shoreline" .}}
+      {{ if .Values.initContainers }}
+{{- with .Values.initContainers }}
+{{toYaml . | indent 6}}{{- end }}
+      {{- end }}
+{{ if .Values.serviceAccount.name }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}
+{{- end }}
+      containers:
+      - env:
+        {{ include "charts.mongo.params" .}}
+        {{ include "charts.kafka.common" .}}
+        {{ include "charts.tracing.common" .}}
+        {{ include "charts.kafka.cloudevents.client" (dict "Values" .Values "Release" .Release "client" "hydrophone") }}
+        - name: HYDROPHONE_ASSET_URL
+          value: {{ include "charts.hydrophone.s3.url" . | quote }}
+        - name: HYDROPHONE_WEB_URL
+          value: {{ include "charts.host.app" . | quote }}
+        - name: HYDROPHONE_USE_MOCK_NOTIFIER
+          value: "{{.Values.deployment.env.useMockNotifier}}"
+        - name: SES_REGION
+          value: {{.Values.global.region | quote }}
+        - name: SES_FROM_ADDRESS
+          value: "{{.Values.deployment.env.fromAddress}}"
+        - name: SERVICE_LISTEN_ADDRESS
+          value: ":{{ .Values.global.ports.hydrophone }}"
+        - name: TIDEPOOL_STORE_DATABASE
+          value: confirm
+        - name: TIDEPOOL_SERVER_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: server
+              key: ServiceAuth
+        - name: TIDEPOOL_AUTH_CLIENT_ADDRESS
+          value: "http://shoreline:{{.Values.global.ports.shoreline}}"
+        - name: TIDEPOOL_SEAGULL_CLIENT_ADDRESS
+          value: "http://seagull:{{.Values.global.ports.seagull}}"
+        - name: TIDEPOOL_PERMISSION_CLIENT_ADDRESS
+          value: "http://gatekeeper:{{.Values.global.ports.gatekeeper}}"
+        - name: TIDEPOOL_METRICS_CLIENT_ADDRESS
+          value: "http://highwater:{{.Values.global.ports.highwater}}"
+        - name: TIDEPOOL_CLINIC_CLIENT_ADDRESS
+          value: "http://internal.{{.Release.Namespace}}"
+        - name: TIDEPOOL_PROTOCOL
+          value: "{{ .Values.global.gateway.default.protocol }}"
+        - name: TIDEPOOL_CLINIC_SERVICE_ENABLED
+          value: "{{.Values.deployment.env.clinicServiceEnabled}}"
+        image: "{{ .Values.deployment.image }}"
+        securityContext:
+          {{- .Values.podSecurityContext | toYaml | nindent 10 }}
+        {{- if .Values.livenessProbe.enabled }}
+        livenessProbe:
+          initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+          httpGet:
+            path: {{ .Values.livenessProbe.path | quote }}
+            port: http
+        {{- end }}
+        {{- if .Values.readinessProbe.enabled }}
+        readinessProbe:
+          initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+          httpGet:
+            path: {{ .Values.readinessProbe.path | quote }}
+            port: http
+        {{- end }}
+        name: hydrophone
+        ports:
+        - containerPort: {{.Values.global.ports.hydrophone}}
+          name: "http"
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
+      securityContext:
+        {{- toYaml .Values.securityContext | nindent 8 }}
+      restartPolicy: Always
+    {{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}

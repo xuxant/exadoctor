@@ -1,0 +1,108 @@
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaUser
+metadata:
+  name: admin
+  namespace: tidepool
+  labels:
+    strimzi.io/cluster: kafka-connect
+spec:
+  authentication:
+    type: scram-sha-512
+    password:
+      valueFrom:
+        secretKeyRef:
+          key: Password
+          name: kafka
+  authorization:
+    type: simple
+    acls:
+      # Example consumer Acls for topic my-topic using consumer group my-group
+      - resource:
+          type: topic
+          name: tidepool
+          patternType: prefix
+        operations:
+          - All 
+        host: "*"
+      - resource:
+          type: group
+          name: tidepool-kafka-connect
+          patternType: literal
+        operations:
+          - All
+        host: "*"
+      - resource:
+          type: group
+          name: tidepool-seagull
+          patternType: literal
+        operations:
+          - All
+        host: "*"
+      - resource:
+          type: group
+          name: tidepool-messageapi
+          patternType: literal
+        operations:
+          - All
+        host: "*"
+      - resource:
+          type: group
+          name: consumers
+          patternType: literal
+        operations:
+          - All
+        host: "*"
+      - resource:
+          type: group
+          name: tidepool-mailer
+          patternType: literal
+        operations:
+          - All
+        host: "*"
+      
+     
+---
+apiVersion: kafka.strimzi.io/v1beta1
+kind: KafkaTopic
+metadata:
+  name: tidepool-kafka-connect-mongo-cluster-configs
+  namespace: tidepool
+  labels:
+    strimzi.io/cluster: kafka-connect
+spec:
+  partitions: 1
+  replicas: 1
+  config:
+    retention.ms: 7200000
+    segment.bytes: 1073741824
+---
+---
+apiVersion: kafka.strimzi.io/v1beta1
+kind: KafkaTopic
+metadata:
+  name: clinic
+  namespace: tidepool
+  labels:
+    strimzi.io/cluster: kafka-connect
+spec:
+  partitions: 1
+  replicas: 1
+  topicName: clinic.patients
+  config:
+    retention.ms: 7200000
+    segment.bytes: 1073741824
+---
+apiVersion: kafka.strimzi.io/v1beta1
+kind: KafkaTopic
+metadata:
+  name: tidepool-mailer
+  namespace: tidepool
+  labels:
+    strimzi.io/cluster: kafka-connect
+spec:
+  partitions: 1
+  replicas: 1
+  topicName: clinic.patients
+  config:
+    retention.ms: 7200000
+    segment.bytes: 1073741824

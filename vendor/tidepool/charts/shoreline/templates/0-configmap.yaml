@@ -1,0 +1,18 @@
+{{ if .Values.configmap.enabled -}}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: shoreline
+  namespace: {{ .Release.Namespace }}
+  labels:
+{{ include "charts.labels.standard" .}}
+data:
+  ClinicDemoUserId: {{ .Values.configmap.data.ClinicDemoUserId | quote }}
+  KeycloakAdminUsername: {{ .Values.configmap.data.KeycloakAdminUsername | quote }}
+  KeycloakBaseUrl: {{ .Values.configmap.data.KeycloakBaseUrl | quote }}
+  KeycloakClientId: {{ .Values.configmap.data.KeycloakClientId | quote }}
+  KeycloakBackendClientId: {{ .Values.configmap.data.KeycloakBackendClientId | quote }}
+  KeycloakLongLivedClientId: {{ .Values.configmap.data.KeycloakLongLivedClientId | quote }}
+  KeycloakRealm: {{ .Values.configmap.data.KeycloakRealm | quote }}
+{{- end }}

@@ -1,0 +1,17 @@
+apiVersion: vendir.k14s.io/v1alpha1
+directories:
+- contents:
+  - git:
+      commitTitle: Release tidepool 0.14.5
+      sha: bc623d1502534496be07f041dcbddb564091ffbd
+      tags:
+      - tidepool-0.14.5
+    path: tidepool
+  - git:
+      commitTitle: Release tidepool 0.14.5
+      sha: bc623d1502534496be07f041dcbddb564091ffbd
+      tags:
+      - tidepool-0.14.5
+    path: keycloak
+  path: vendor
+kind: LockConfig

@@ -1,0 +1,118 @@
+global:
+  # -- maximum timeout for any web request
+  maxTimeout: 120s
+  fullnameOverride: ""
+  # -- if non-empty, Helm chart name to use
+  nameOverride: ""
+  # -- aws region that services run in
+  region: "us-east-1"
+  # -- the default log level for all services
+  logLevel: info
+  gateway:
+    default:
+      # -- scheme to use for web service
+      protocol: http
+      # -- hostname of web service
+      host: diabete.exadoctor.com
+      # -- host to use for API calls
+      apiHost: ""
+      # -- host to use for front end calls
+      appHost: ""
+      # -- domain to use for cookies
+      domain: "diabete.exadoctor.com"
+    proxy:
+      name: gateway-proxy
+      namespace: gloo-system
+  glooingress:
+    # -- whether to use Gloo API Gateway for ingress
+    enabled: true
+    jwt:
+      disabled: false
+    extauth:
+      enabled: false
+  kafka:
+    connect:
+      # -- whether to generate strimzi resources for CDC
+      enabled: true
+      # -- the name of the kafka connect cluster
+      clusterName: kafka-connect
+      # -- the number of replicas for the kafka connect cluster
+      replicas: 1
+      # -- max tasks for sink connectors
+      sinkTasksMax: 1
+      # -- max tasks for source connectors
+      sourceTasksMax: 1
+      # -- enable tls
+      tlsEnabled: false
+      # -- mongo connection uri
+      mongoConnectionUri: ${directory:/opt/kafka/external-configuration/connector-config:Scheme}://${directory:/opt/kafka/external-configuration/connector-config:Username}:${directory:/opt/kafka/external-configuration/connector-config:Password}@${directory:/opt/kafka/external-configuration/connector-config:Addresses}/?ssl=${directory:/opt/kafka/external-configuration/connector-config:Tls}
+      # -- mongo source connector heartbeat interval
+      mongoHeartbeatIntervalMs: 60000
+      # -- enable keycloak kafka connector
+      keycloak:
+        enabled: true
+    # -- The password key ref
+    passwordKeyName: "Password"
+  linkerdsupport:
+    # -- whether to include linkerdsupport subchart with Linkerd service profiles
+    enabled: false
+  ports:
+    # -- blip service internal port
+    blip: 31500
+    # -- clinic service internal port
+    clinic: 8080
+    # -- clinic worker internal port
+    clinic_worker: 8080
+    # -- devices service grpc internal port
+    devices_grpc: 9228
+    # -- devices service http internal port
+    devices_http: 9229
+    # -- export service internal port
+    export: 9300
+    # -- gatekeeper service internal port
+    gatekeeper: 9123
+    # -- highwater service internal port
+    highwater: 9191
+    # -- hydrophone service internal port
+    hydrophone: 9157
+    # -- jellyfish service internal port
+    jellyfish: 9122
+    # -- messageapi service internal port
+    messageapi: 9119
+    # -- auth service internal port
+    auth: 9222
+    # -- blob service internal port
+    blob: 9225
+    # -- data service internal port
+    data: 9220
+    # -- image service internal port
+    image: 9226
+    # -- mailer service internal port
+    mailer: 8080
+    # -- notification service internal port
+    notification: 9223
+    # -- prescription service internal port
+    prescription: 9227
+    # -- task service internal port
+    task: 9224
+    # -- seagull service internal port
+    seagull: 9120
+    # -- shoreline service internal port
+    shoreline: 9107
+    # -- summary service internal port
+    summary: 9230
+    # -- tidewhisperer service internal port
+    tidewhisperer: 9127
+  secret:
+    enabled: true
+    generated: true
+    templated: false
+tidepool:
+  tests:
+    job: "none"
+    enabled: false
+  namespace:
+    create: false
+    annotations: {}
+keycloak:
+  enabled: true

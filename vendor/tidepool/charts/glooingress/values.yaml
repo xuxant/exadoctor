@@ -1,0 +1,37 @@
+# -- whether to enable the Gloo API Gateway integration
+enabled: true                           
+global:
+  gateway:
+    proxy: 
+      # -- name of the Gloo gateway proxy that will host the virtual service
+      name: "gateway-proxy"
+      # -- namespace of the Gloo gateway proxy that will host the virtual service
+      #namespace:                         
+      port: 80
+extauth:
+  enabled: false
+virtualServices:
+  http:
+    name: http
+    # -- DNS names served with HTTP 
+    dnsNames: [ "localhost", "tidepool.susanta.com.np" ]
+    # -- whether to accept HTTP requests 
+    enabled: true
+    # -- whether to redirect HTTP requests to HTTPS
+    redirect: false                     
+    labels: {}
+    options: {}
+  https:
+    name: https
+    # -- DNS names served with HTTPS
+    dnsNames: []  
+    # -- whether to serve HTTPS                      
+    enabled: false
+    # -- whether to require Strict Transport Security
+    hsts: false                         
+    labels: {}
+    options: {}
+  httpInternal:
+    name: http-internal
+    labels: {}
+    options: {}

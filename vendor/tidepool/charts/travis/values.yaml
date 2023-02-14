@@ -1,0 +1,5 @@
+secret:
+  # -- whether to generate secret
+  enabled: false
+  data_:
+    Token: ""

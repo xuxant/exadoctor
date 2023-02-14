@@ -1,0 +1,8 @@
+secret: 
+  # -- whether to create userdata secret
+  enabled: false
+  data_: 
+    # -- plaintext user password salt
+    UserPasswordSalt: ""
+    # -- plaintext user id salt
+    UserIdSalt: ""

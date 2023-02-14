@@ -1,0 +1,27 @@
+{{ if .Values.global.glooingress.enabled }}
+apiVersion: gateway.solo.io/v1
+kind: RouteTable
+metadata:
+  name: messageapi
+  namespace: {{ .Release.Namespace }}
+  labels:
+    namespace: {{ .Release.Namespace }}
+    app: tidepool
+spec:
+  weight: 10
+  routes:
+  - matchers:
+    - methods:
+      - GET
+      - POST
+      - PUT
+      - PATCH
+      - DELETE
+      prefix: /message/
+    routeAction:
+      single:
+        upstream:
+          name: messageapi
+    options:
+      timeout: '30s'
+{{- end }}

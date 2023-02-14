@@ -1,0 +1,15 @@
+apiVersion: vendir.k14s.io/v1alpha1
+kind: Config
+directories:
+- path: vendor
+  contents:
+  - path: tidepool
+    newRootPath: charts/tidepool
+    git:
+      url: https://github.com/tidepool-org/development
+      ref: master
+  - path: keycloak
+    newRootPath: charts/keycloak
+    git:
+      url: https://github.com/tidepool-org/development
+      ref: master

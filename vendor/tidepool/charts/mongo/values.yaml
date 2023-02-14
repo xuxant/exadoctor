@@ -1,0 +1,19 @@
+secret:
+  # -- whether to create mongo secret
+  enabled: true
+  data_:
+    # -- plaintext Mongo DB scheme, either `mongodb` or `mongodb+srv`
+    Scheme: "mongodb"
+    # -- plaintext comma-separated list of Mongo `host[:port]` addresses
+    Addresses: "mongo-mongodb.mongodb:27017"
+    # -- plaintext, If non-empty, Mongo username
+    Username: "root"
+    # -- plaintext Mongo password
+    Password: "MongoRootPassword"
+    # -- plaintext Mongo database name
+    Database: "tidepool"
+    # -- plaintext, If true, use SSL on Mongo connection
+    Tls: ""
+    # -- plaintext additional Mongo connection params
+    OptParams: "authSource=admin"
+    # ConnectionString: "mongodb://root:MongoRootPassword@mongo-mongodb.mongodb:27017/tidepool"
